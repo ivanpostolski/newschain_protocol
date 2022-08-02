@@ -1,6 +1,6 @@
 # Newschain:
 
-Newschain is an experimental platform to democratize news publication and distribution.  
+[Newschain](https://newschain-frontend.pages.dev/) is an experimental platform to democratize news publication and distribution.  
 
 Motivated by the current state of digital media: clickbait news, consumer lack of trust and censorship.  This is a non-profit experiment to understand the opportunities that the blockchain technology may offer to distribute news. 
 
