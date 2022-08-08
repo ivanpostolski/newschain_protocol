@@ -1,0 +1,30 @@
+
+title Viewership Protocol
+
+participant Viewer_0
+participant ...
+participant Viewer_N
+participant Newschain Contract
+participant Blockchain Logs
+
+
+== block.number **i**==
+note over Newschain Contract,Blockchain Logs:**event published_article**(article_id,location_hash,title\n,img,article,msg.sender,challenge)
+
+==block.number **j**==
+  
+Viewer_0->Newschain Contract: view_pow(article_id, pow_hash)
+
+note over Newschain Contract:require( j < i + 3600)\nrequire(keccak(pow_hash, challenge) == 0x000000...)
+
+Newschain Contract->Blockchain Logs:emit viewer_event
+note over Newschain Contract,Blockchain Logs:**event viewer_event**(article_id,location, location_hash\n,challenge,difficulty_level,restart)\n\ndifficulty_level = 0  (//initial difficulty//)\nrestart = false
+
+Viewer_0<-Newschain Contract://return// challenge
+==block.number **h**==
+Viewer_N->Newschain Contract:view_pow(article_id, pow_hash)
+
+note over Newschain Contract:require( h < i + 3600)\nrequire(keccak(pow_hash, challenge) == 0x +'0' * difficulty_level...)\n\n**if** ( h < j + 2): \n    new_difficulty_level = difficulty_level + 1\n    new_challenge = keccak(challenge,block.number,block.coinbase) \n    new_restart = true\n\n**else if** (h > j + 40 && difficulty_level >0): \n    new_difficulty_level = difficulty_level - 1\n    new_challenge = keccak(challenge,block.number,block.coinbase)\n    new_restart = true\n\n** else **:\n    new_difficulty_level = difficulty_level\n    new_challenge = challenge\n    new_restart = false
+Newschain Contract->Blockchain Logs:emit viewer_event
+note over Newschain Contract,Blockchain Logs:**event viewer_event**(article_id,location, location_hash\n,new_challenge,new_difficulty_level,new_restart)
+Viewer_N<-Newschain Contract://return// challenge

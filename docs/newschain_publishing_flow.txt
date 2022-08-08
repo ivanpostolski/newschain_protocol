@@ -1,0 +1,28 @@
+
+title Viewership Protocol
+
+participant Viewer_0
+participant ...
+participant Viewer_N
+participant Newschain Contract
+participant Logs
+
+
+== block.number **i**==
+note over Newschain Contract,Logs:**event published_article**(article_id,location_hash,title\n,img,article,msg.sender,challenge)
+
+==block.number **j**==
+  
+Viewer_0->Newschain Contract: view_pow(article_id, pow_hash)
+
+note over Newschain Contract:require(keccak(pow_hash, challenge) == 0x000000...)
+
+Newschain Contract->Logs:emit viewer_event
+note over Newschain Contract,Logs:**event viewer_event**(article_id,location, location_hash\n,challenge,difficulty_level,restart)\n\ndifficulty_level = 0
+
+==block.number **h**==
+Viewer_N->Newschain Contract:view_pow(article_id, pow_hash)
+
+note over Newschain Contract:require(keccak(pow_hash, challenge) == 0x +'0' * difficulty_level...)\n\n**if** ( h < j + 2): \n    difficulty_level = difficulty_level + 1\n    challenge = keccak(challenge,block.number,block.coinbase) \n    restart = true\n\n**else if** (h > j + 40 && difficulty_level >0): \n    difficulty_level = difficulty_level - 1\n    challenge = keccak(challenge,block.number,block.coinbase)\n    restart = true
+Newschain Contract->Logs:emit viewer_event
+note over Newschain Contract,Logs:**event viewer_event**(article_id,location, location_hash\n,challenge,difficulty_level,restart)
